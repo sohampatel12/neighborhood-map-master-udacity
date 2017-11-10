@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<link href="https://fonts.googleapis.com/css?family=Raleway:300" rel="stylesheet">
 <!-- 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous"> -->
 	<link rel="stylesheet" type="text/css" href="css/style.css">
@@ -9,22 +10,22 @@
 
 <body>
 	<div class="container">
-		<div class="row1">
-			<h1>Neighborhood Map</h1>
-		</div>
 		<div class="row2">
 			<div class="side-bar">
-				<input type="text" name="search-bar" class="input-text" placeholder="Search" data-bind="textInput: searchTerm, valueUpdate: 'afterkeydown'">
-				<!-- <button class="search-button btn">Search</button> -->
-				<div class="places-list">
-                  <ul class="main-nav">
-                     <li data-bind="text: name, click: selectLocation"></li>
-                     <li data-bind="visible: filteredLocations().length == 0" style="cursor:auto;">No Results</li>
+				<h1>Neighborhood Map</h1>
+				<div class="search-pane">
+					<input type="search" name="search" class="input-text" placeholder="Search" data-bind="value: searchTerm, valueUpdate: 'keyup'" autocomplete="off">
+					<!-- <button class="search-button btn">Search</button> -->
+				</div>	
+				<div class="places-list" data-bind="visible: locations().length > 0">
+                  <ul class="main-nav" data-bind="foreach: locations">
+                     <li data-bind="text: title, click: selectLocation"></li>
+                     <!-- <li data-bind="visible: filteredLocations().length == 0" style="cursor:auto;">No Results</li> -->
                   </ul>
 				</div>			
 			</div>
 			<div id="map" class="map-space">There has been an error loading Google Maps. Please try again.</div>
-			<div class="">
+			<div>
 					<button id="recenter-button" class="btn">Recenter</button>
 			</div>
 		</div>
