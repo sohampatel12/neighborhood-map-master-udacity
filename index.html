@@ -3,40 +3,45 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<link href="https://fonts.googleapis.com/css?family=Raleway:300" rel="stylesheet">
-<!-- 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous"> -->
+	<link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
 	<link rel="stylesheet" type="text/css" href="css/style.css">
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ" crossorigin="anonymous"></script>
+	<script src="js/jquery-3.2.1.min.js"></script>
+	<title>Neighborhood Map</title>
 </head>
 
 <body>
-	<div class="container">
-		<div class="row2">
-			<div class="side-bar">
+	<div class="container-fluid">
+		<div class="row">
+			<div class="side-bar col-md-3">
 				<h1>Neighborhood Map</h1>
 				<div class="search-pane">
-					<input type="search" name="search" class="input-text" placeholder="Search" data-bind="value: searchTerm, valueUpdate: 'keyup'" autocomplete="off">
-					<!-- <button class="search-button btn">Search</button> -->
+					<input type="search" class="form-control" placeholder="Search for..." data-bind="textInput: searchTerm, valueUpdate: 'afterkeydown'" style="height: 45px;">
 				</div>	
-				<div class="places-list" data-bind="visible: locations().length > 0">
-                  <ul class="main-nav" data-bind="foreach: locations">
-                     <li data-bind="text: title, click: selectLocation"></li>
-                     <!-- <li data-bind="visible: filteredLocations().length == 0" style="cursor:auto;">No Results</li> -->
+				<div class="places-list">
+                  <ul class="list-group" data-bind="foreach: locationList">
+                     <li data-bind="text: title, click: show" class="list-group-item" style="cursor: pointer;"></li>
                   </ul>
-				</div>			
+				</div>
+				<div class="row">
+					<button id="recenter-button" class="btn btn-light">Recenter</button>
+				</div>					
 			</div>
-			<div id="map" class="map-space">There has been an error loading Google Maps. Please try again.</div>
-			<div>
-					<button id="recenter-button" class="btn">Recenter</button>
-			</div>
+			
+			<div id="map" class="map-space col"></div>
 		</div>
 	</div>
 
-	<script async defer
-    	src="https://maps.googleapis.com/maps/api/js?libraries=geometry,drawing&key=AIzaSyDCnWdkZugA4RARru1to9VgrVyLftnndXg&callback=initMap">
-    </script>
+	
     <script src="js/jquery-3.2.1.min.js"></script>
     <script src="js/knockout-3.4.2.js"></script>
 	<script src="js/app.js"></script>
+
+	<script async defer
+    	src="https://maps.googleapis.com/maps/api/js?libraries=places,geometry,drawing&key=AIzaSyDCnWdkZugA4RARru1to9VgrVyLftnndXg&callback=initMap" onerror="googleMapsError()">
+    </script>
+
 </body>
 
 </html>
