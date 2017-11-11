@@ -185,9 +185,10 @@ var Location = function(data) {
 
     var wikiUrl = 'http://en.wikipedia.org/w/api.php?action=opensearch&search=' + this.title + '&format=json&callback=wikiCallback';
 
-    var wikiRequestTimeout = setTimeout(function(){
-    	self.fail = true;
-    }, 4000);
+    // var wikiRequestTimeout = setTimeout(function(){
+    // 	this.wikiLink = 'Wikipedia content';
+    // 	this.wikiStr = 'could not be loaded';
+    // }, 4000);
 
     $.ajax({
         url: wikiUrl,
@@ -196,9 +197,13 @@ var Location = function(data) {
         success: function(response) {
             var articleList = response[1];
             articleStr = articleList[0];
-            self.wikiLink = 'http://en.wikipedia.org/wiki/' + articleStr;
-            self.wikiStr = articleStr;
-            clearTimeout(wikiRequestTimeout);
+            self.wikiLink = '<p>Wikipedia Link: <a href="http://en.wikipedia.org/wiki/' + articleStr + '">'
+            self.wikiStr =  articleStr + '</a></p>';
+            // clearTimeout(wikiRequestTimeout);
+        },
+        error: function() {
+        	self.wikiLink = '<p>Wikipedia link could';
+        	self.wikiStr = 'not be loaded</p>';
         }
     });
 
@@ -294,7 +299,7 @@ function populateInfoWindow(marker, wikiLink, wikiStr, infowindow) {
 	  var streetViewService = new google.maps.StreetViewService();
 	  var radius = 50;
 
-	  var windowContent = '<div id="info-window"><h5>' + marker.title + '</h5>' + '<p>Wikipedia Link: <a href="' + wikiLink + '">' + wikiStr + '</a></p>';
+	  var windowContent = '<div id="info-window"><h5>' + marker.title + '</h5>' + wikiLink + wikiStr;
 	  // In case the status is OK, which means the pano was found, compute the
 	  // position of the streetview image, then calculate the heading, then get a
 	  // panorama from that and set the options
