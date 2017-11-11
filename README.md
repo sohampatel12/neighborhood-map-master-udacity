@@ -6,7 +6,7 @@ This project contains a neighborhood I would like to visit. The map contains a l
 
 The project I had been working on is hosted on GitHubPages. So you can directly visit the below URL and carry out all the page speed tests 
 
-URL : <https://sohampatel12.github.io/frontend-website-optimisation/>
+URL : https://sohampatel12.github.io/neighborhood-map-master-udacity/
 
 ## Functions used in the project:
 
