@@ -3,10 +3,19 @@
 This project contains a neighborhood I would like to visit. The map contains a list of locations which are marked on the map view. The markers show info windows when clicked to view further information about the place when clicked. The info window contains a wikipedia link for further information about the place. The window also contains a street view imagery of the place. 
 
 ## Usage:
+### Online hosting:
 
 The project I had been working on is hosted on GitHubPages. So you can directly visit the below URL and carry out all the page speed tests 
 
 URL : https://sohampatel12.github.io/neighborhood-map-master-udacity/
+
+###For Local usage: 
+
+- To start the app, open index.html in your browser. 
+
+- The javascript code is written in js/app.js
+
+- Styles are given using bootstrap and css/styles.css
 
 ## Functions used in the project:
 
