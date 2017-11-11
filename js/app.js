@@ -139,7 +139,7 @@ function initMap() {
     // initialize map
 	map = new google.maps.Map(document.getElementById('map'), {
 		zoom: 12,
-		// styles: styles,
+		styles: styles,
 		center: { lat: 40.7713024, lng: -73.9632393 }
 	});
 
