@@ -149,9 +149,9 @@ function initMap() {
     // initialize infoWindow
     infoWindow = new google.maps.InfoWindow();
 
- 	document.getElementById('recenter-button').addEventListener('click', function() {
-		map.fitBounds(bounds);
-	});
+ // 	document.getElementById('recenter-button').addEventListener('click', function() {
+	// 	map.fitBounds(bounds);
+	// });
 	  
 	ko.applyBindings(new ViewModel());
 }
@@ -253,6 +253,10 @@ var ViewModel = function() {
     this.searchTerm = ko.observable('');
 
     this.places = ko.observableArray([]);
+
+    this.recenterButton = function() {
+    	map.fitBounds(bounds);
+    };
 
     // add location markers for each location
     locations.forEach(function(location) {
