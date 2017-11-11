@@ -1,9 +1,6 @@
 
-
 html, body {
 	background-color: #353D45;
-	margin-left: 10px;
-	font-family: 'Raleway', sans-serif;
 	width: 100%;
 	height: 100%;
 }
@@ -11,61 +8,29 @@ html, body {
 h1 {
 	color: #FFFFFF;
 	text-align: center;
-}
+	font-family: 'Raleway', sans-serif;
 
-.container {
-	width: 100%;
-	height: 100%;
 }
 
 #map {
+	height: 100vh;
+}
+
+#info-window {
+	width: 40vh;
+	height: 50vh;
+}
+
+#pano {
 	width: 100%;
-	height: 700px;
-	margin-left: 10px;
-	margin-right: 10px;
-}
-
-.btn {
-    border: none; /* Remove borders */
-    color: white; /* Add a text color */
-    padding: 10px;  /*Add some padding */
-    cursor: pointer; /* Add a pointer cursor on mouse-over */
-    background-color: #e7e7e7; 
-    color: black;
-}
-
-.search-button {
-	height: 30px;
-	margin-top: 10px;
-	margin-right: 10px;
-	height: 35px;
-}
-
-.input-text {
-	height: 30px;
-	font-size: 16px;
-	margin-left: 10px;
-	margin-top: 10px;
-	padding-left: 10px;
+	height: 60%;
 }
 
 #recenter-button {
-	position: absolute;
-	bottom: 10px;
-	right: 10px;
-}
- 
-.btn:hover {background: #ddd;}
-
-.side-bar {
-	background-color: #4c5863;
+	margin: 15px;
 }
 
-.search-pane {
-	display: flex;
+@media ( max-width: 1180px ) {
+	font-size: 20px;
 }
 
-.row2 {
-	display: flex;
-	height: 100%;
-}
