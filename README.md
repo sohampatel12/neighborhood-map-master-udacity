@@ -9,7 +9,7 @@ The project I had been working on is hosted on GitHubPages. So you can directly 
 
 URL : https://sohampatel12.github.io/neighborhood-map-master-udacity/
 
-###For Local usage: 
+### For Local usage: 
 
 - To start the app, open index.html in your browser. 
 
