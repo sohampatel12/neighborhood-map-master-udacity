@@ -1,277 +1,59 @@
 var map;
-
+var infoWindow;
+var bounds;
 var markers = [];
 
 var locations = [
 	{
-		title: 'Park Ave Penthouse',
+		title: 'Empire State Building',
 		location: {
-			lat: 40.7713024,
-			lng: -73.9632393
+			lat: 40.748541,
+			lng: -73.985758 
+		}	
+	},
+	{
+		title: 'Chrysler Building',
+		location: {
+			lat: 40.751758,
+			lng: -73.975519
 		}
 	},
 	{
-		title: 'Chelsea Loft',
+		title: 'New York University',
 		location: {
-			lat: 40.7444883,
-			lng: -73.9949465
+			lat: 40.729513,
+			lng: -73.996461 
 		}
 	},
 	{
-		title: 'Union Square Open Floor Plan',
+		title: 'The Museum of Modern Art',
 		location: {
-			lat: 40.7347062,
-			lng: -73.9895759
+			lat: 40.761417,
+			lng: -73.97712
 		}
 	},
 	{
-		title: 'East Village Hip Studio',
+		title: 'United Nations Headquarters',
 		location: {
-			lat: 40.7281777,
-			lng: -73.984377
+			lat: 40.749161,
+			lng: -73.967477
 		}
 	},
 	{
-		title: 'TriBeCa Artsy Bachelor Pad',
+		title: 'Central Park Zoo',
 		location: {
-			lat: 40.7195264,
-			lng: -74.0089934
+			lat: 40.767017,
+			lng: -73.971966
 		}
 	},
 	{
-		title: 'Chinatown Homey Space',
+		title: 'Times Square',
 		location: {
-			lat: 40.7180628,
-			lng: -73.9961237
+			lat: 40.758895,
+			lng: -73.985131
 		}
 	}
 ];
-
-var Location = function(location) {
-	var self = this;
-	function makeMarkerIcon(markerColor) {
-		var markerImage = new google.maps.MarkerImage(
-			'http://chart.googleapis.com/chart?chst=d_map_spin&chld=1.15|0|' + markerColor +
-			'|40|_|%E2%80%A2',
-			new google.maps.Size(21, 34),
-			new google.maps.Point(0, 0),
-			new google.maps.Point(10, 34),
-			new google.maps.Size(21, 34));
-		return markerImage;
-	}
-	// Create default and highlighted icons for when the mouse hovers over the icon.
-	var defaultIcon = makeMarkerIcon('0091ff');
-	var highlightedIcon = makeMarkerIcon('FFFF24');
-
-	// Get the position from the location array.
-	self.position = ko.observable(location.location);
-	self.title = ko.observable(location.title);
-	self.active = ko.observable(false);
-
-	self.getContent = function(callback) {
-        // if self.content has already been set, return its value
-        if (self.content){
-            return self.content();
-        }
-
-        var wikiUrl = 'http://en.wikipedia.org/w/api.php?action=opensearch&search=' + self.name() + '&format=json&callback=wikiCallback';
-
-        jQuery.ajax({
-            url: wikiUrl,
-            dataType: 'jsonp',
-        })
-        .done(function(response) {
-            var wikiContent = '';
-            if (response){
-                if (typeof response[1] !=="undefined" && typeof response[3] !=="undefined"){
-                    for (var i = 0; i < 3; i++) {
-                        if (typeof response[1][i] !=="undefined" && typeof response[3][i] !=="undefined"){
-                            wikiContent += '<a href="' + response[3][i] + '" target"_blank">' + response[1][i] + '</a><br>';
-                        }
-                    }
-                }
-            }
-            if (wikiContent !== '') {
-                self.content = ko.observable('<h4>Wikipedia results for "' + self.name() + '"</h4><p>' + wikiContent + '</p>');                 
-            } else {
-                self.content = ko.observable('<h4>Wikipedia results for "' + self.name() + '"</h4><p>There was a problem reaching wikipedia, sorry =/</p>');                 
-            }
-        })
-        .fail(function() {
-            console.log("error in ajax call to wikipedia's api");
-            self.content = ko.observable('<h4>Wikipedia results for "' + self.name() + '"</h4><p>There was a problem reaching wikipedia, sorry =/</p>');                 
-        })
-        .always(function() {
-            if (typeof callback !== "undefined"){
-                callback(self);
-            }
-        });
-
-        // return a spinner for while the external API is still loading
-        return '<h4>Wikipedia results for "' + self.name() + '"</h4><p><span class="spinner"></span></p>';
-    };
-
-
-	// Create a marker per location, and put into markers array.
-	self.createMarker = (function() {
-		self.marker = new google.maps.Marker({
-			position: self.position,
-			title: self.title,
-			animation: google.maps.Animation.DROP,
-			icon: defaultIcon,
-		});
-
-		map.bounds.extend(self.marker.position);
-
-		self.marker.addListener('click', function() {
-			selectLocation(self);
-
-		self.marker.addListener('mouseover', function() {
-			self.setIcon(highlightedIcon);
-		});
-		
-		self.marker.addListener('mouseout', function() {
-			self.setIcon(defaultIcon);
-		});
-
-		});
-	})();	
-
-};
-
-// function initMap() {
-
-// 	var styles = [
-// 		{
-// 			"stylers": [{
-// 				"saturation": -100
-// 			}, {
-// 				"gamma": 1
-// 			}]
-// 		}, {
-// 			"elementType": "labels.text.stroke",
-// 			"stylers": [{
-// 				"visibility": "off"
-// 			}]
-// 		}, {
-// 			"featureType": "poi.business",
-// 			"elementType": "labels.text",
-// 			"stylers": [{
-// 				"visibility": "off"
-// 			}]
-// 		}, {
-// 			"featureType": "poi.business",
-// 			"elementType": "labels.icon",
-// 			"stylers": [{
-// 				"visibility": "off"
-// 			}]
-// 		}, {
-// 			"featureType": "poi.place_of_worship",
-// 			"elementType": "labels.text",
-// 			"stylers": [{
-// 				"visibility": "off"
-// 			}]
-// 		}, {
-// 			"featureType": "poi.place_of_worship",
-// 			"elementType": "labels.icon",
-// 			"stylers": [{
-// 				"visibility": "off"
-// 			}]
-// 		}, {
-// 			"featureType": "road",
-// 			"elementType": "geometry",
-// 			"stylers": [{
-// 				"visibility": "simplified"
-// 			}]
-// 		}, {
-// 			"featureType": "water",
-// 			"stylers": [{
-// 				"visibility": "on"
-// 			}, {
-// 				"saturation": 50
-// 			}, {
-// 				"gamma": 0
-// 			}, {
-// 				"hue": "#50a5d1"
-// 			}]
-// 		}, {
-// 			"featureType": "administrative.neighborhood",
-// 			"elementType": "labels.text.fill",
-// 			"stylers": [{
-// 				"color": "#333333"
-// 			}]
-// 		}, {
-// 			"featureType": "road.local",
-// 			"elementType": "labels.text",
-// 			"stylers": [{
-// 				"weight": 0.5
-// 			}, {
-// 				"color": "#333333"
-// 			}]
-// 		}, {
-// 			"featureType": "transit.station",
-// 			"elementType": "labels.icon",
-// 			"stylers": [{
-// 				"gamma": 1
-// 			}, {
-// 				"saturation": 50
-// 			}]
-// 		}
-// 	];
-
-// 	map = new google.maps.Map(document.getElementById('map'), {
-// 		zoom: 10,
-// 		styles: styles,
-// 	});
-
-// 	// Earlier locations was initialised here.
-
-// 	// var largeInfowindow = new google.maps.InfoWindow();
-
-// 	// // The following group uses the location array to create an array of markers on initialize.
-
-// 	var bounds = new google.maps.LatLngBounds();
-
-// 	// for (var i = 0; i < locations.length; i++) {
-// 	// 	// Get the position from the location array.
-// 	// 	var position = locations[i].location;
-// 	// 	var title = locations[i].title;
-// 	// 	// Create a marker per location, and put into markers array.
-// 	// 	var marker = new google.maps.Marker({
-// 	// 		position: position,
-// 	// 		title: title,
-// 	// 		animation: google.maps.Animation.DROP,
-// 	// 		icon: defaultIcon,
-// 	// 		id: i
-// 	// 	});
-
-// 	// 	marker.setMap(map);
-// 	// 	bounds.extend(marker.position);
-
-// 	// 	// Push the marker to our array of markers.
-// 	// 	markers.push(marker);
-// 	// 	// Create an onclick event to open the large infowindow at each marker.
-// 	// 	marker.addListener('click', function() {
-// 	// 		populateInfoWindow(this, largeInfowindow);
-// 	// 	});
-// 	// 	// Two event listeners - one for mouseover, one for mouseout,
-// 	// 	// to change the colors back and forth.
-// 	// 	marker.addListener('mouseover', function() {
-// 	// 		this.setIcon(highlightedIcon);
-// 	// 	});
-// 	// 	marker.addListener('mouseout', function() {
-// 	// 		this.setIcon(defaultIcon);
-// 	// 	});
-// 	// }
-
-// 	map.fitBounds(bounds);
-
-	
-
-// 	document.getElementById('recenter-button').addEventListener('click', function() {
-// 		map.fitBounds(bounds);
-// 	});
-// }
 
 // Google Maps
 function initMap() {
@@ -356,110 +138,198 @@ function initMap() {
 
     // initialize map
 	map = new google.maps.Map(document.getElementById('map'), {
-		zoom: 10,
-		styles: styles
+		zoom: 12,
+		// styles: styles,
+		center: { lat: 40.7713024, lng: -73.9632393 }
 	});
 
     // initialize bounds variable
-    map.bounds = new google.maps.LatLngBounds();
+    bounds = new google.maps.LatLngBounds();
 
     // initialize infoWindow
-    infoWindow = new google.maps.InfoWindow({
-        content: ''
-    });
+    infoWindow = new google.maps.InfoWindow();
 
-    google.maps.event.addListener(infoWindow, 'closeclick', function(){
-        resetActiveState();
-    });
-
-    // add eventlistener to resize map when the browser resizes
-    google.maps.event.addDomListener(window, 'resize', function() {
-        map.fitBounds(map.bounds);
-    });
-
-    document.getElementById('recenter-button').addEventListener('click', function() {
-		map.fitBounds(map.bounds);
+ 	document.getElementById('recenter-button').addEventListener('click', function() {
+		map.fitBounds(bounds);
 	});
+	  
+	ko.applyBindings(new ViewModel());
 }
 
-// function populateInfoWindow(marker, infowindow) {
-// 	// Check to make sure the infowindow is not already opened on this marker.
-// 	if (infowindow.marker != marker) {
-// 		// Clear the infowindow content to give the streetview time to load.
-// 		infowindow.setContent('');
-// 		infowindow.marker = marker;
-// 		// Make sure the marker property is cleared if the infowindow is closed.
-// 		infowindow.addListener('closeclick', function() {
-// 			infowindow.marker = null;
-// 		});
-// 		var streetViewService = new google.maps.StreetViewService();
-// 		var radius = 50;
-// 		// In case the status is OK, which means the pano was found, compute the
-// 		// position of the streetview image, then calculate the heading, then get a
-// 		// panorama from that and set the options
-// 		function getStreetView(data, status) {
-// 			if (status == google.maps.StreetViewStatus.OK) {
-// 				var nearStreetViewLocation = data.location.latLng;
-// 				var heading = google.maps.geometry.spherical.computeHeading(
-// 					nearStreetViewLocation, marker.position);
-// 				infowindow.setContent('<div>' + marker.title + '</div><div id="pano"></div>');
-// 				var panoramaOptions = {
-// 					position: nearStreetViewLocation,
-// 					pov: {
-// 						heading: heading,
-// 						pitch: 30
-// 					}
-// 				};
-// 				var panorama = new google.maps.StreetViewPanorama(
-// 					document.getElementById('pano'), panoramaOptions);
-// 			} else {
-// 				infowindow.setContent('<div>' + marker.title + '</div>' +
-// 					'<div>No Street View Found</div>');
-// 			}
-// 		}
-// 		// Use streetview service to get the closest streetview image within
-// 		// 50 meters of the markers position
-// 		streetViewService.getPanoramaByLocation(marker.position, radius, getStreetView);
-// 		// Open the infowindow on the correct marker.
-// 		infowindow.open(map, marker);
-// 	}
-// }
+function googleMapsError() {
+    alert('An error occurred with Google Maps!');
+}
 
-var viewModel = {
-	// var self = this;
+function makeMarkerIcon(markerColor) {
+	var markerImage = new google.maps.MarkerImage(
+        'http://chart.googleapis.com/chart?chst=d_map_spin&chld=1.15|0|' + markerColor +
+        '|40|_|%E2%80%A2',
+        new google.maps.Size(21, 34),
+        new google.maps.Point(0, 0),
+        new google.maps.Point(10, 34),
+        new google.maps.Size(21, 34));
+    return markerImage;
+}
 
-	markers : ko.observableArray([]),
+var Location = function(data) {
+	var self = this;
+	this.title = data.title;
+	this.position = data.location;
+	this.wikiLink = '';
+	this.wikiStr = '';
+	this.visible = ko.observable(true);
+	// this.fail = false;
+	// Create different icons for normal view and mouse hover.
+    var defaultIcon = makeMarkerIcon('0091ff');
+    var highlightedIcon = makeMarkerIcon('FFFF24');
 
-	locations : ko.observableArray([]),
-	searchTerm : ko.observable(''),
+    var wikiUrl = 'http://en.wikipedia.org/w/api.php?action=opensearch&search=' + this.title + '&format=json&callback=wikiCallback';
 
-	search: function(value) {
-		viewModel.locations.removeAll();
-		viewModel.markers.removeAll();
+    var wikiRequestTimeout = setTimeout(function(){
+    	self.fail = true;
+    }, 4000);
 
-		if(value == '') return;
+    $.ajax({
+        url: wikiUrl,
+        dataType: "jsonp",
+        jsonp: "callback",
+        success: function(response) {
+            var articleList = response[1];
+            articleStr = articleList[0];
+            self.wikiLink = 'http://en.wikipedia.org/wiki/' + articleStr;
+            self.wikiStr = articleStr;
+            clearTimeout(wikiRequestTimeout);
+        }
+    });
 
-		for (var location in locations) {
-			if(locations[location].title.toLowerCase().indexOf(value.toLowerCase()) >=0 ) {
-				viewModel.locations.push(locations[location]);
-				// viewModel.markers.push(markers[location]);
-			// } else {
-			// 	marker.setVisible(false);
-			}
+	this.marker = new google.maps.Marker({
+		position: this.position,
+		title: this.title,
+		icon: defaultIcon,
+		animation: google.maps.Animation.DROP,
+		map: map
+	});
+
+	self.filterMarkers = ko.computed(function() {
+		if(self.visible() === true) {
+			self.marker.setMap(map);
+			bounds.extend(self.marker.position);
+			map.fitBounds(bounds);
+				
+
+		} else {
+			self.marker.setMap(null);
+							
+
 		}
-	},
+	});
 
-	resetActiveState: function() {
-		currentLocation().active(false);
-		currentLocation().marker.setAnimation(null);
-		infoWindow.close();
-	}
+	this.marker.addListener('click', function() {
+		populateInfoWindow(this, self.wikiLink, self.wikiStr, infoWindow);
+		toggleBounce(this);
+		map.panTo(this.getPosition());
+	});
 
-	// selectLocation: function(value) {
-	// 	markers
-	// }
+	this.marker.addListener('mouseover', function() {
+		this.setIcon(highlightedIcon);
+	});
+
+	this.marker.addListener('mouseout', function() {
+		this.setIcon(defaultIcon);
+	});
+
+	this.show = function(location) {
+		google.maps.event.trigger(self.marker, 'click');
+	};
+
+	this.bounce = function(place) {
+		google.maps.event.trigger(self.marker, 'click');
+	};
 };
 
-viewModel.searchTerm.subscribe(viewModel.search);
+var ViewModel = function() {
+    var self = this;
 
-ko.applyBindings(viewModel);
+    this.searchTerm = ko.observable('');
+
+    this.places = ko.observableArray([]);
+
+    // add location markers for each location
+    locations.forEach(function(location) {
+        self.places.push( new Location(location) );
+    });
+
+    // locations viewed on map
+    this.locationList = ko.computed(function() {
+        var searchFilter = self.searchTerm().toLowerCase();
+        if (searchFilter) {
+            return ko.utils.arrayFilter(self.places(), function(location) {
+                var str = location.title.toLowerCase();
+                var result = str.includes(searchFilter);
+                location.visible(result);
+				return result;
+			});
+        }
+        self.places().forEach(function(location) {
+            location.visible(true);
+        });
+        return self.places();
+    }, self);
+};
+
+function populateInfoWindow(marker, wikiLink, wikiStr, infowindow) {
+	// Check to make sure the infowindow is not already opened on this marker.
+	if (infowindow.marker != marker) {
+	  // Clear the infowindow content to give the streetview time to load.
+	  infowindow.setContent('');
+	  infowindow.marker = marker;
+	  // Make sure the marker property is cleared if the infowindow is closed.
+	  infowindow.addListener('closeclick', function() {
+	    infowindow.marker = null;
+	  });
+	  var streetViewService = new google.maps.StreetViewService();
+	  var radius = 50;
+
+	  var windowContent = '<div id="info-window"><h5>' + marker.title + '</h5>' + '<p>Wikipedia Link: <a href="' + wikiLink + '">' + wikiStr + '</a></p>';
+	  // In case the status is OK, which means the pano was found, compute the
+	  // position of the streetview image, then calculate the heading, then get a
+	  // panorama from that and set the options
+	  var getStreetView = function(data, status) {
+	    if (status == google.maps.StreetViewStatus.OK) {
+	      var nearStreetViewLocation = data.location.latLng;
+	      var heading = google.maps.geometry.spherical.computeHeading(
+	        nearStreetViewLocation, marker.position);
+	        infowindow.setContent(windowContent + '<div id="pano"></div></div>');
+	        var panoramaOptions = {
+	          position: nearStreetViewLocation,
+	          pov: {
+	            heading: heading,
+	            pitch: 30
+	          }
+	        };
+	      var panorama = new google.maps.StreetViewPanorama(
+	        document.getElementById('pano'), panoramaOptions);
+	    } else {
+	      infowindow.setContent('<div>' + marker.title + '</div>' +
+	        '<div>No Street View Found</div>');
+	    }
+	  }
+	  // Use streetview service to get the closest streetview image within
+	  // 50 meters of the markers position
+	  streetViewService.getPanoramaByLocation(marker.position, radius, getStreetView);
+	  // Open the infowindow on the correct marker.
+	  infowindow.open(map, marker);
+	}
+}
+
+function toggleBounce(marker) {
+  if (marker.getAnimation() !== null) {
+    marker.setAnimation(null);
+  } else {
+    marker.setAnimation(google.maps.Animation.BOUNCE);
+    setTimeout(function() {
+        marker.setAnimation(null);
+    }, 1400);
+  }
+}
+
